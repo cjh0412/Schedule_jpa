@@ -33,6 +33,11 @@ public class MemberService {
 
     public MemberResponseDto findByIdOrElseThrow(Long id) {
         Member member = memberRepository.findByIdOrElseThrow(id);
+
+        if(!id.equals(member.getId())){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자 정보가 일치하지 않습니다.");
+        }
+
         return new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail());
     }
 

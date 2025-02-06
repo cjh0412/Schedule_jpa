@@ -17,34 +17,34 @@ public class TodoController {
     private final TodoService todoService;
 
     @PostMapping
-    public ResponseEntity<TodoResponseDto> save(@RequestBody TodoRequestDto requestDto){
+    public ResponseEntity<TodoResponseDto> save(@RequestHeader Long memberId, @RequestBody TodoRequestDto requestDto){
         TodoResponseDto responseDto
-                = todoService.save(requestDto.getTitle(), requestDto.getContent(), requestDto.getAuthor());
+                = todoService.save(memberId, requestDto.getTitle(), requestDto.getContent());
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<TodoResponseDto>> findALL(){
-        List<TodoResponseDto> responseDtoList = todoService.findAll();
+    public ResponseEntity<List<TodoResponseDto>> findALL(@RequestHeader Long memberId){
+        List<TodoResponseDto> responseDtoList = todoService.findAll(memberId);
         return new ResponseEntity<>(responseDtoList, HttpStatus.OK);
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<TodoResponseDto> findById(@PathVariable Long id){
-        TodoResponseDto responseDto = todoService.findById(id);
+    public ResponseEntity<TodoResponseDto> findById(@RequestHeader Long memberId, @PathVariable Long id){
+        TodoResponseDto responseDto = todoService.findById(memberId, id);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateTodo(@PathVariable Long id, @RequestBody TodoRequestDto requestDto){
-        todoService.updateTodo(id, requestDto.getTitle(), requestDto.getContent(), requestDto.getAuthor());
+    public ResponseEntity<Void> updateTodo(@RequestHeader Long memberId, @PathVariable Long id, @RequestBody TodoRequestDto requestDto){
+        todoService.updateTodo(memberId, id, requestDto.getTitle(), requestDto.getContent());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTodo(@PathVariable Long id){
-        todoService.deleteTodo(id);
+    public ResponseEntity<Void> deleteTodo(@RequestHeader Long memberId, @PathVariable Long id){
+        todoService.deleteTodo(memberId, id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -9,11 +9,11 @@ public class TodoRequestDto {
 
     private String content;
 
-    private String author;
+    private Long memberId;
 
-    public TodoRequestDto(String title, String content, String author) {
+    public TodoRequestDto(String title, String content, Long memberId) {
         this.title = title;
         this.content = content;
-        this.author = author;
+        this.memberId = memberId;
     }
 }
