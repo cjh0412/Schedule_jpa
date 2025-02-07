@@ -18,7 +18,7 @@ public class MemberController {
 
     @PostMapping("/signUp")
     public ResponseEntity<MemberResponseDto> save(@RequestBody MemberRequestDto requestDto){
-        MemberResponseDto responseDto = memberService.save(requestDto.getUsername(),  requestDto.getEmail());
+        MemberResponseDto responseDto = memberService.save(requestDto.getUsername(),  requestDto.getEmail(), requestDto.getPassword());
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
@@ -30,13 +30,16 @@ public class MemberController {
 
     @GetMapping("/{id}")
     public ResponseEntity<MemberResponseDto> findById(@PathVariable Long id){
-        MemberResponseDto responseDto = memberService.findByIdOrElseThrow(id);
+        MemberResponseDto responseDto = memberService.findById(id);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateMember(@PathVariable Long id, @RequestBody MemberRequestDto requestDto){
-        memberService.updateMember(id, requestDto.getUsername(), requestDto.getEmail());
+        memberService.updateMember(id,
+                requestDto.getUsername(),
+                requestDto.getEmail(),
+                requestDto.getPassword());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -24,15 +24,15 @@ public class TodoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TodoResponseDto>> findALL(@RequestHeader Long memberId){
-        List<TodoResponseDto> responseDtoList = todoService.findAll(memberId);
+    public ResponseEntity<List<TodoResponseDto>> findALL(){
+        List<TodoResponseDto> responseDtoList = todoService.findAll();
         return new ResponseEntity<>(responseDtoList, HttpStatus.OK);
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<TodoResponseDto> findById(@RequestHeader Long memberId, @PathVariable Long id){
-        TodoResponseDto responseDto = todoService.findById(memberId, id);
+    public ResponseEntity<TodoResponseDto> findById(@PathVariable Long id){
+        TodoResponseDto responseDto = todoService.findById(id);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 

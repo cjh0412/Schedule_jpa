@@ -17,8 +17,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public MemberResponseDto save(String username, String email) {
-        Member member = new Member(username, email);
+    public MemberResponseDto save(String username, String email, String password) {
+        Member member = new Member(username, email, password);
          memberRepository.save(member);
         return new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail());
     }
@@ -30,31 +30,33 @@ public class MemberService {
                 .toList();
     }
 
+    public MemberResponseDto findById(Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "조회된 정보가 없습니다."));
+        return new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail());
+    }
 
-    public MemberResponseDto findByIdOrElseThrow(Long id) {
-        Member member = memberRepository.findByIdOrElseThrow(id);
-
-        if(!id.equals(member.getId())){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자 정보가 일치하지 않습니다.");
-        }
-
+    public MemberResponseDto findByEmailAndPassword(String email, String password) {
+        Member member = memberRepository.findByEmailAndPassword(email, password)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "이메일과 비밀번호 정보가 일치하지 않습니다."));
         return new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail());
     }
 
     @Transactional
-    public void updateMember(Long id, String username, String email) {
-        Member member = memberRepository.findByIdOrElseThrow(id);
-        if(!id.equals(member.getId())){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "수정할 수 있는 데이터가 없습니다.");
+    public void updateMember(Long id, String username, String email, String password) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "수정할 수 있는 데이터가 없습니다."));
+
+        if(!password.equals(member.getPassword())){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "잘못된 비밀번호 입니다.");
         }
+
         member.updateMember(username, email);
     }
 
     public void deleteMember(Long id) {
-        Member member = memberRepository.findByIdOrElseThrow(id);
-        if(!id.equals(member.getId())){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "삭제할 수 있는 데이터가 없습니다.");
-        }
-        memberRepository.deleteById(id);
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "삭제할 수 있는 데이터가 없습니다."));
+        memberRepository.deleteById(member.getId());
     }
 }

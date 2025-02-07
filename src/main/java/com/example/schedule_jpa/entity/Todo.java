@@ -19,10 +19,6 @@ public class Todo extends BaseEntity{
     @Column(columnDefinition = "longtext")
     private String content;
 
-//    @Column(nullable = false)
-//    private String author;
-
-    //todo member 매핑 필요
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
