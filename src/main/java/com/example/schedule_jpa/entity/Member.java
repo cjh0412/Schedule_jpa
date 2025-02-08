@@ -2,6 +2,8 @@ package com.example.schedule_jpa.entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Entity
@@ -14,9 +16,11 @@ public class Member extends BaseEntity{
     private Long id;
 
     @Column(nullable = false)
+    @Size(max = 4, message = "사용자명은 4자 이하로 입력해주세요.")
     private String username;
 
     @Column(nullable = false)
+    @Pattern(regexp = "^[\\w!#$%&'*+/=?`{|}~^.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$", message = "이메일 형식이 올바르지 않습니다.")
     private String email;
 
     @Column(nullable = false)

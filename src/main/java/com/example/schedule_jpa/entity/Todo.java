@@ -1,6 +1,7 @@
 package com.example.schedule_jpa.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import org.apache.tomcat.util.http.parser.Authorization;
 
@@ -14,6 +15,7 @@ public class Todo extends BaseEntity{
     private Long id;
 
     @Column(nullable = false)
+    @Size(max = 10, message = "제목은 10자 이하로 입력해주세요.")
     private String title;
 
     @Column(columnDefinition = "longtext")
@@ -28,9 +30,10 @@ public class Todo extends BaseEntity{
 
     }
 
-    public Todo(String title, String content) {
+    public Todo(String title, String content, Member member) {
         this.title = title;
         this.content = content;
+        this.member = member;
     }
 
     public void updateTodo(String title, String content) {
@@ -38,7 +41,4 @@ public class Todo extends BaseEntity{
         this.content = content;
     }
 
-    public void setMember(Member member) {
-        this.member = member;
-    }
 }
