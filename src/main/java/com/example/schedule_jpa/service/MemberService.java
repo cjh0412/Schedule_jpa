@@ -1,5 +1,6 @@
 package com.example.schedule_jpa.service;
 
+import com.example.schedule_jpa.config.PasswordEncoder;
 import com.example.schedule_jpa.dto.MemberRequestDto;
 import com.example.schedule_jpa.dto.MemberResponseDto;
 import com.example.schedule_jpa.entity.Member;
@@ -17,9 +18,10 @@ import java.util.List;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder encoder;
 
     public MemberResponseDto save(String username, String email, String password) {
-        Member member = new Member(username, email, password);
+        Member member = new Member(username, email, encoder.encode(password));
          memberRepository.save(member);
         return new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail());
     }
@@ -38,8 +40,12 @@ public class MemberService {
     }
 
     public MemberResponseDto memberLogin(String email, String password) {
-        Member member = memberRepository.findByEmailAndPassword(email, password)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "아이디 또는 비밀번호가 맞지 않습니다."));
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "존재하지 않는 이메일 정보입니다."));
+
+        if(!encoder.matches(password, member.getPassword())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        };
 
         return new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail());
     }
@@ -49,16 +55,21 @@ public class MemberService {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "수정할 수 있는 데이터가 없습니다."));
 
-        if(!password.equals(member.getPassword())){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "잘못된 비밀번호 입니다.");
-        }
+        if(!encoder.matches(password, member.getPassword())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        };
 
         member.updateMember(username, email);
     }
 
-    public void deleteMember(Long id) {
+    public void deleteMember(Long id, String password) {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "삭제할 수 있는 데이터가 없습니다."));
+
+        if(!encoder.matches(password, member.getPassword())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+        };
+
         memberRepository.deleteById(member.getId());
     }
 

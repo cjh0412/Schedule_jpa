@@ -2,7 +2,6 @@ package com.example.schedule_jpa.controller;
 
 import com.example.schedule_jpa.dto.MemberRequestDto;
 import com.example.schedule_jpa.dto.MemberResponseDto;
-import com.example.schedule_jpa.repository.MemberRepository;
 import com.example.schedule_jpa.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -57,8 +56,8 @@ public class MemberController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMember(@PathVariable Long id){
-        memberService.deleteMember(id);
+    public ResponseEntity<Void> deleteMember(@PathVariable Long id, @RequestParam String password){
+        memberService.deleteMember(id, password);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
