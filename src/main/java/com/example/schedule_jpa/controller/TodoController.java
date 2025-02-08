@@ -3,7 +3,11 @@ package com.example.schedule_jpa.controller;
 import com.example.schedule_jpa.dto.TodoRequestDto;
 import com.example.schedule_jpa.dto.TodoResponseDto;
 import com.example.schedule_jpa.service.TodoService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +21,10 @@ public class TodoController {
     private final TodoService todoService;
 
     @PostMapping
-    public ResponseEntity<TodoResponseDto> save(@RequestHeader Long memberId, @RequestBody TodoRequestDto requestDto){
+    public ResponseEntity<TodoResponseDto> save(HttpServletRequest request, @Valid  @RequestBody TodoRequestDto requestDto){
+        HttpSession session = request.getSession();
+        Long memberId = (Long) session.getAttribute("token");
+
         TodoResponseDto responseDto
                 = todoService.save(memberId, requestDto.getTitle(), requestDto.getContent());
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
@@ -37,13 +44,19 @@ public class TodoController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateTodo(@RequestHeader Long memberId, @PathVariable Long id, @RequestBody TodoRequestDto requestDto){
+    public ResponseEntity<Void> updateTodo(HttpServletRequest request, @PathVariable Long id, @RequestBody TodoRequestDto requestDto){
+        HttpSession session = request.getSession();
+        Long memberId = (Long) session.getAttribute("token");
+
         todoService.updateTodo(memberId, id, requestDto.getTitle(), requestDto.getContent());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTodo(@RequestHeader Long memberId, @PathVariable Long id){
+    public ResponseEntity<Void> deleteTodo(HttpServletRequest request, @PathVariable Long id){
+        HttpSession session = request.getSession();
+        Long memberId = (Long) session.getAttribute("token");
+
         todoService.deleteTodo(memberId, id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

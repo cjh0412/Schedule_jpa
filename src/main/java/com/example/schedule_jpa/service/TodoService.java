@@ -25,10 +25,9 @@ public class TodoService {
         if(!memberRepository.existsById(memberId)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 회원을 찾을 수 없습니다.");
         }
-        Member findMember = memberRepository.getReferenceById(memberId);
 
-        Todo todo = new Todo(title, content);
-        todo.setMember(findMember);
+        Member findMember = memberRepository.getReferenceById(memberId);
+        Todo todo = new Todo(title, content, findMember);
 
         todoRepository.save(todo);
         return new TodoResponseDto(todo.getId(),   todo.getTitle(), todo.getContent() , todo.getMember().getId(), todo.getMember().getUsername());
@@ -57,7 +56,6 @@ public class TodoService {
         }
 
         todo.updateTodo(title, content);
-
     }
 
     public void deleteTodo(Long memberId ,Long id) {

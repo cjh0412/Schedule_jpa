@@ -2,7 +2,11 @@ package com.example.schedule_jpa.controller;
 
 import com.example.schedule_jpa.dto.MemberRequestDto;
 import com.example.schedule_jpa.dto.MemberResponseDto;
+import com.example.schedule_jpa.repository.MemberRepository;
 import com.example.schedule_jpa.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +21,18 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signUp")
-    public ResponseEntity<MemberResponseDto> save(@RequestBody MemberRequestDto requestDto){
+    public ResponseEntity<MemberResponseDto> save(@Valid @RequestBody MemberRequestDto requestDto){
         MemberResponseDto responseDto = memberService.save(requestDto.getUsername(),  requestDto.getEmail(), requestDto.getPassword());
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<MemberResponseDto> loginMember(HttpServletRequest request,  @RequestBody MemberRequestDto requestDto){
+        MemberResponseDto responseDto = memberService.memberLogin(requestDto.getEmail(), requestDto.getPassword());
+
+        HttpSession session = request.getSession(true);
+        session.setAttribute("token", responseDto.getId());
+        return new ResponseEntity<>(responseDto,HttpStatus.OK);
     }
 
     @GetMapping
@@ -48,4 +61,6 @@ public class MemberController {
         memberService.deleteMember(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
 }

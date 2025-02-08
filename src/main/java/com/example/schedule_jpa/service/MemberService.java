@@ -1,5 +1,6 @@
 package com.example.schedule_jpa.service;
 
+import com.example.schedule_jpa.dto.MemberRequestDto;
 import com.example.schedule_jpa.dto.MemberResponseDto;
 import com.example.schedule_jpa.entity.Member;
 import com.example.schedule_jpa.repository.MemberRepository;
@@ -36,9 +37,10 @@ public class MemberService {
         return new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail());
     }
 
-    public MemberResponseDto findByEmailAndPassword(String email, String password) {
+    public MemberResponseDto memberLogin(String email, String password) {
         Member member = memberRepository.findByEmailAndPassword(email, password)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "이메일과 비밀번호 정보가 일치하지 않습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "아이디 또는 비밀번호가 맞지 않습니다."));
+
         return new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail());
     }
 
@@ -59,4 +61,6 @@ public class MemberService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "삭제할 수 있는 데이터가 없습니다."));
         memberRepository.deleteById(member.getId());
     }
+
+
 }
