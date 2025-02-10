@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,14 +36,14 @@ public class MemberController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MemberResponseDto>> findAll(){
-        List<MemberResponseDto> responseDtoList = memberService.findAll();
+    public ResponseEntity<List<MemberResponseDto>> findAll(Pageable pageable){
+        List<MemberResponseDto> responseDtoList = memberService.findAll(pageable);
         return new ResponseEntity<>(responseDtoList, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MemberResponseDto> findById(@PathVariable Long id){
-        MemberResponseDto responseDto = memberService.findById(id);
+    public ResponseEntity<MemberResponseDto> findById(@PathVariable Long id, Pageable pageable){
+        MemberResponseDto responseDto = memberService.findById(id, pageable);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 

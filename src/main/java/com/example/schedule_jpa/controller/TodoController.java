@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,15 +32,15 @@ public class TodoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TodoResponseDto>> findALL(){
-        List<TodoResponseDto> responseDtoList = todoService.findAll();
+    public ResponseEntity<List<TodoResponseDto>> findALL(Pageable pageable){
+        List<TodoResponseDto> responseDtoList = todoService.findAll(pageable);
         return new ResponseEntity<>(responseDtoList, HttpStatus.OK);
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<TodoResponseDto> findById(@PathVariable Long id){
-        TodoResponseDto responseDto = todoService.findById(id);
+    public ResponseEntity<TodoResponseDto> findById(@PathVariable Long id, Pageable pageable){
+        TodoResponseDto responseDto = todoService.findById(id, pageable);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 

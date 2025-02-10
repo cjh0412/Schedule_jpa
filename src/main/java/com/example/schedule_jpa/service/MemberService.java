@@ -6,6 +6,7 @@ import com.example.schedule_jpa.dto.MemberResponseDto;
 import com.example.schedule_jpa.entity.Member;
 import com.example.schedule_jpa.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,15 +27,15 @@ public class MemberService {
         return new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail());
     }
 
-    public List<MemberResponseDto> findAll() {
-        return memberRepository.findAll()
+    public List<MemberResponseDto> findAll(Pageable pageable) {
+        return memberRepository.findAll(pageable)
                 .stream()
                 .map(MemberResponseDto::toDto)
                 .toList();
     }
 
-    public MemberResponseDto findById(Long id) {
-        Member member = memberRepository.findById(id)
+    public MemberResponseDto findById(Long id, Pageable pageable) {
+        Member member = memberRepository.findById(id, pageable)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "조회된 정보가 없습니다."));
         return new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail());
     }
