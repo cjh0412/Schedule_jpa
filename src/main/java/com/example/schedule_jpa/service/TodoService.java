@@ -43,8 +43,8 @@ public class TodoService {
                 .toList();
     }
 
-    public TodoResponseDto findById(Long id, Pageable pageable) {
-        Todo todo = todoRepository.findById(id, pageable)
+    public TodoResponseDto findById(Long id) {
+        Todo todo = todoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "조회된 정보가 없습니다."));
         return new TodoResponseDto(todo.getId(), todo.getTitle(), todo.getContent(), todo.getMember().getId(), todo.getMember().getUsername());
     }

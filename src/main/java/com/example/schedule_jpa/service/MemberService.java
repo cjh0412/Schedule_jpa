@@ -21,6 +21,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder encoder;
 
+    // todo : 이메일 중복 체크 추가
     public MemberResponseDto save(String username, String email, String password) {
         Member member = new Member(username, email, encoder.encode(password));
          memberRepository.save(member);
@@ -34,8 +35,8 @@ public class MemberService {
                 .toList();
     }
 
-    public MemberResponseDto findById(Long id, Pageable pageable) {
-        Member member = memberRepository.findById(id, pageable)
+    public MemberResponseDto findById(Long id) {
+        Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "조회된 정보가 없습니다."));
         return new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail());
     }

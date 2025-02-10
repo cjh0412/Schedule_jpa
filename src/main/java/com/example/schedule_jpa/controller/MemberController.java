@@ -42,8 +42,8 @@ public class MemberController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MemberResponseDto> findById(@PathVariable Long id, Pageable pageable){
-        MemberResponseDto responseDto = memberService.findById(id, pageable);
+    public ResponseEntity<MemberResponseDto> findById(@PathVariable Long id){
+        MemberResponseDto responseDto = memberService.findById(id);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
@@ -61,6 +61,5 @@ public class MemberController {
         memberService.deleteMember(id, password);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
 }
