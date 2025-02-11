@@ -1,5 +1,8 @@
 package com.example.schedule_jpa.service;
 
+import com.example.schedule_jpa.command.CreateTodoCommand;
+import com.example.schedule_jpa.command.UpdateTodoCommand;
+import com.example.schedule_jpa.dto.TodoRequestDto;
 import com.example.schedule_jpa.dto.TodoResponseDto;
 import com.example.schedule_jpa.entity.Member;
 import com.example.schedule_jpa.entity.Todo;
@@ -22,14 +25,14 @@ public class TodoService {
     private final TodoRepository todoRepository;
     private final MemberRepository memberRepository;
 
-    public TodoResponseDto save(Long memberId, String title, String content){
+    public TodoResponseDto save(CreateTodoCommand command){
 
-        if(!memberRepository.existsById(memberId)){
+        if(!memberRepository.existsById(command.getMemberId())){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 회원을 찾을 수 없습니다.");
         }
 
-        Member findMember = memberRepository.getReferenceById(memberId);
-        Todo todo = new Todo(title, content, findMember);
+        Member findMember = memberRepository.getReferenceById(command.getMemberId());
+        Todo todo = new Todo(command.getTitle(), command.getContent(), findMember);
 
         todoRepository.save(todo);
         return new TodoResponseDto(todo.getId(),   todo.getTitle(), todo.getContent() , todo.getMember().getId(), todo.getMember().getUsername());
@@ -47,15 +50,15 @@ public class TodoService {
     }
 
     @Transactional
-    public void updateTodo(Long memberId ,Long id, String title, String content) {
-        Todo todo = todoRepository.findById(id)
+    public void updateTodo(UpdateTodoCommand command) {
+        Todo todo = todoRepository.findById(command.getId())
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "수정할 수 있는 데이터가 없습니다."));
 
-        if(!memberId.equals(todo.getMember().getId())){
+        if(!command.getMemberId().equals(todo.getMember().getId())){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "일정은 작성자만 수정이 가능합니다.");
         }
 
-        todo.updateTodo(title, content);
+        todo.updateTodo(command.getTitle(), command.getContent());
     }
 
     public void deleteTodo(Long memberId ,Long id) {

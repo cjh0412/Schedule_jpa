@@ -1,6 +1,9 @@
 package com.example.schedule_jpa.service;
 
+import com.example.schedule_jpa.command.CreateMemberCommand;
+import com.example.schedule_jpa.command.UpdateMemberCommand;
 import com.example.schedule_jpa.config.PasswordEncoder;
+import com.example.schedule_jpa.dto.MemberRequestDto;
 import com.example.schedule_jpa.dto.MemberResponseDto;
 import com.example.schedule_jpa.entity.Member;
 import com.example.schedule_jpa.repository.MemberRepository;
@@ -19,10 +22,10 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder encoder;
 
-    public MemberResponseDto save(String username, String email, String password) {
-        Member member = new Member(username, email, encoder.encode(password));
+    public MemberResponseDto save(CreateMemberCommand command) {
+        Member member = new Member(command.getUsername(), command.getEmail(), encoder.encode(command.getPassword()));
 
-        if(memberRepository.findByEmail(email).isPresent()){
+        if(memberRepository.findByEmail(command.getEmail()).isPresent()){
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 회원가입된 이메일입니다.");
         }
 
@@ -53,15 +56,15 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateMember(Long id, String username, String email, String password) {
-        Member member = memberRepository.findById(id)
+    public void updateMember(UpdateMemberCommand command) {
+        Member member = memberRepository.findById(command.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "수정할 수 있는 데이터가 없습니다."));
 
-        if(!encoder.matches(password, member.getPassword())){
+        if(!encoder.matches(command.getPassword(), member.getPassword())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
         };
 
-        member.updateMember(username, email);
+        member.updateMember(command.getUsername(), command.getEmail());
     }
 
     public void deleteMember(Long id, String password) {

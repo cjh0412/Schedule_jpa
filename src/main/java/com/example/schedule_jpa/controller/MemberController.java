@@ -1,5 +1,7 @@
 package com.example.schedule_jpa.controller;
 
+import com.example.schedule_jpa.command.CreateMemberCommand;
+import com.example.schedule_jpa.command.UpdateMemberCommand;
 import com.example.schedule_jpa.dto.MemberRequestDto;
 import com.example.schedule_jpa.dto.MemberResponseDto;
 import com.example.schedule_jpa.service.MemberService;
@@ -23,7 +25,8 @@ public class MemberController {
 
     @PostMapping("/signUp")
     public ResponseEntity<MemberResponseDto> save(@Valid @RequestBody MemberRequestDto requestDto){
-        MemberResponseDto responseDto = memberService.save(requestDto.getUsername(),  requestDto.getEmail(), requestDto.getPassword());
+        CreateMemberCommand memberCommand = new CreateMemberCommand(requestDto.getUsername(), requestDto.getEmail(), requestDto.getPassword());
+        MemberResponseDto responseDto = memberService.save(memberCommand);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
@@ -50,10 +53,8 @@ public class MemberController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateMember(@PathVariable Long id, @RequestBody MemberRequestDto requestDto){
-        memberService.updateMember(id,
-                requestDto.getUsername(),
-                requestDto.getEmail(),
-                requestDto.getPassword());
+        UpdateMemberCommand memberCommand = new UpdateMemberCommand(id, requestDto.getUsername(), requestDto.getEmail(), requestDto.getPassword());
+        memberService.updateMember(memberCommand);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

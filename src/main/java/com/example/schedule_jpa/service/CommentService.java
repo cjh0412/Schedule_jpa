@@ -1,5 +1,8 @@
 package com.example.schedule_jpa.service;
 
+import com.example.schedule_jpa.command.CreateCommentCommand;
+import com.example.schedule_jpa.command.UpdateCommentCommand;
+import com.example.schedule_jpa.dto.CommentRequestDto;
 import com.example.schedule_jpa.dto.CommentResponseDto;
 import com.example.schedule_jpa.entity.Comment;
 import com.example.schedule_jpa.entity.Member;
@@ -21,10 +24,12 @@ public class CommentService {
     private final TodoRepository todoRepository;
     private final MemberRepository memberRepository;
 
-    public CommentResponseDto save(String content, Long memberId, Long todoId){
-        Todo todo = todoRepository.findById(todoId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "할일 정보를 다시 조회해 주세요"));
-        Member findMember = memberRepository.getReferenceById(memberId);
-        Comment comment = new Comment(content, findMember, todo);
+    public CommentResponseDto save(CreateCommentCommand commentCommand){
+        Member findMember = memberRepository.getReferenceById(commentCommand.getMemberId());
+        Todo todo = todoRepository.findById(commentCommand.getTodoId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "할일 정보를 다시 조회해 주세요"));
+
+        Comment comment = new Comment(commentCommand.getContent(), findMember, todo);
         commentRepository.save(comment);
 
         return new CommentResponseDto(comment.getId(),
@@ -43,7 +48,8 @@ public class CommentService {
     }
 
     public CommentResponseDto findById(Long id){
-        Comment comment = commentRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "조회된 댓글이 없습니다."));
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "조회된 댓글이 없습니다."));
         return new CommentResponseDto(comment.getId(),
                 comment.getTodo().getId(),
                 comment.getContent(),
@@ -52,18 +58,20 @@ public class CommentService {
                 comment.getCreatedAt());
     }
 
-    public void updateComment(Long id, String content, Long memberId){
-        Comment comment = commentRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "수정할 수 있는 댓글이 없습니다."));
+    public void updateComment(UpdateCommentCommand commentCommand){
+        Comment comment = commentRepository.findById(commentCommand.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "수정할 수 있는 댓글이 없습니다."));
 
-        if(!memberId.equals(comment.getMember().getId())){
+        if(!commentCommand.getMemberId().equals(comment.getMember().getId())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "댓글 작성자만 수정이 가능합니다.");
         }
 
-        comment.update(content);
+        comment.update(commentCommand.getContent());
     }
 
     public void deleteComment(Long id, Long memberId){
-        Comment comment = commentRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "삭제할 수 있는 댓글이 없습니다."));
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "삭제할 수 있는 댓글이 없습니다."));
         if(!memberId.equals(comment.getMember().getId())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "댓글 작성자만 수정이 가능합니다.");
         }
