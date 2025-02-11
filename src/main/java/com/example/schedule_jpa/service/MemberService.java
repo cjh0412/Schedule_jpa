@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -32,11 +30,9 @@ public class MemberService {
         return new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail());
     }
 
-    public List<MemberResponseDto> findAll(Pageable pageable) {
+    public Page<MemberResponseDto> findAll(Pageable pageable) {
         return memberRepository.findAll(pageable)
-                .stream()
-                .map(MemberResponseDto::toDto)
-                .toList();
+                .map(MemberResponseDto::toDto);
     }
 
     public MemberResponseDto findById(Long id) {

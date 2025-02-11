@@ -6,9 +6,8 @@ import com.example.schedule_jpa.entity.Todo;
 import com.example.schedule_jpa.repository.MemberRepository;
 import com.example.schedule_jpa.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,11 +35,9 @@ public class TodoService {
         return new TodoResponseDto(todo.getId(),   todo.getTitle(), todo.getContent() , todo.getMember().getId(), todo.getMember().getUsername());
     }
 
-    public List<TodoResponseDto> findAll(Pageable pageable) {
+    public Page<TodoResponseDto> findAll(Pageable pageable) {
         return  todoRepository.findAll(pageable)
-                .stream()
-                .map(TodoResponseDto :: toDto)
-                .toList();
+                .map(TodoResponseDto :: toDto);
     }
 
     public TodoResponseDto findById(Long id) {
