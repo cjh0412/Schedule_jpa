@@ -6,6 +6,8 @@ import com.example.schedule_jpa.dto.TodoRequestDto;
 import com.example.schedule_jpa.dto.TodoResponseDto;
 import com.example.schedule_jpa.entity.Member;
 import com.example.schedule_jpa.entity.Todo;
+import com.example.schedule_jpa.exception.TodoException;
+import com.example.schedule_jpa.exception.errorcode.TodoErrorCode;
 import com.example.schedule_jpa.repository.MemberRepository;
 import com.example.schedule_jpa.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
