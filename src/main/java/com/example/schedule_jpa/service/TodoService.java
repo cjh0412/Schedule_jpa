@@ -43,10 +43,9 @@ public class TodoService {
                 .map(TodoResponseDto :: toDto);
     }
 
-    public TodoResponseDto findById(Long id) {
-        Todo todo = todoRepository.findById(id)
+    public Todo findById(Long id) {
+        return todoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "조회된 정보가 없습니다."));
-        return new TodoResponseDto(todo.getId(), todo.getTitle(), todo.getContent(), todo.getMember().getId(), todo.getMember().getUsername());
     }
 
     @Transactional

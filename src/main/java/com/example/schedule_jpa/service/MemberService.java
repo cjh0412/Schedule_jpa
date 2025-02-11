@@ -23,12 +23,11 @@ public class MemberService {
     private final PasswordEncoder encoder;
 
     public MemberResponseDto save(CreateMemberCommand command) {
-        Member member = new Member(command.getUsername(), command.getEmail(), encoder.encode(command.getPassword()));
-
         if(memberRepository.findByEmail(command.getEmail()).isPresent()){
-           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 회원가입된 이메일입니다.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 회원가입된 이메일입니다.");
         }
 
+        Member member = new Member(command.getUsername(), command.getEmail(), encoder.encode(command.getPassword()));
          memberRepository.save(member);
         return new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail());
     }
@@ -38,10 +37,10 @@ public class MemberService {
                 .map(MemberResponseDto::toDto);
     }
 
-    public MemberResponseDto findById(Long id) {
-        Member member = memberRepository.findById(id)
+    // 재사용 가능성 높으므로 member로 반환
+    public Member findById(Long id) {
+        return memberRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "조회된 정보가 없습니다."));
-        return new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail());
     }
 
     public MemberResponseDto memberLogin(String email, String password) {

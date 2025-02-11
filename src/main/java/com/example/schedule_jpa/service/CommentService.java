@@ -47,15 +47,9 @@ public class CommentService {
                 .toList();
     }
 
-    public CommentResponseDto findById(Long id){
-        Comment comment = commentRepository.findById(id)
+    public Comment findById(Long id){
+        return commentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "조회된 댓글이 없습니다."));
-        return new CommentResponseDto(comment.getId(),
-                comment.getTodo().getId(),
-                comment.getContent(),
-                comment.getMember().getId(),
-                comment.getMember().getUsername(),
-                comment.getCreatedAt());
     }
 
     public void updateComment(UpdateCommentCommand commentCommand){
