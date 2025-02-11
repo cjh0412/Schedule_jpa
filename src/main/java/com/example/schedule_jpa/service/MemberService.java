@@ -1,11 +1,11 @@
 package com.example.schedule_jpa.service;
 
 import com.example.schedule_jpa.config.PasswordEncoder;
-import com.example.schedule_jpa.dto.MemberRequestDto;
 import com.example.schedule_jpa.dto.MemberResponseDto;
 import com.example.schedule_jpa.entity.Member;
 import com.example.schedule_jpa.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,9 +21,13 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder encoder;
 
-    // todo : 이메일 중복 체크 추가
     public MemberResponseDto save(String username, String email, String password) {
         Member member = new Member(username, email, encoder.encode(password));
+
+        if(memberRepository.findByEmail(email).isPresent()){
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 회원가입된 이메일입니다.");
+        }
+
          memberRepository.save(member);
         return new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail());
     }
