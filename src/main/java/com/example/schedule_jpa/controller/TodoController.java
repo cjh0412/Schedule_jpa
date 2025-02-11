@@ -4,6 +4,7 @@ import com.example.schedule_jpa.command.CreateTodoCommand;
 import com.example.schedule_jpa.command.UpdateTodoCommand;
 import com.example.schedule_jpa.dto.TodoRequestDto;
 import com.example.schedule_jpa.dto.TodoResponseDto;
+import com.example.schedule_jpa.entity.Todo;
 import com.example.schedule_jpa.service.TodoService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -41,7 +42,8 @@ public class TodoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<TodoResponseDto> findById(@PathVariable Long id){
-        TodoResponseDto responseDto = todoService.findById(id);
+        Todo todo = todoService.findById(id);
+        TodoResponseDto responseDto = new TodoResponseDto(todo.getId(), todo.getTitle(), todo.getContent(), todo.getMember().getId(), todo.getMember().getUsername());
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 

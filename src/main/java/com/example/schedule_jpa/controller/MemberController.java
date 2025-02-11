@@ -4,6 +4,7 @@ import com.example.schedule_jpa.command.CreateMemberCommand;
 import com.example.schedule_jpa.command.UpdateMemberCommand;
 import com.example.schedule_jpa.dto.MemberRequestDto;
 import com.example.schedule_jpa.dto.MemberResponseDto;
+import com.example.schedule_jpa.entity.Member;
 import com.example.schedule_jpa.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -47,8 +48,8 @@ public class MemberController {
 
     @GetMapping("/{id}")
     public ResponseEntity<MemberResponseDto> findById(@PathVariable Long id){
-        MemberResponseDto responseDto = memberService.findById(id);
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        Member member = memberService.findById(id);
+        return new ResponseEntity<>(new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail()), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
