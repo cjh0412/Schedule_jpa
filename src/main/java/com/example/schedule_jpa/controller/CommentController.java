@@ -1,5 +1,7 @@
 package com.example.schedule_jpa.controller;
 
+import com.example.schedule_jpa.command.CreateCommentCommand;
+import com.example.schedule_jpa.command.UpdateCommentCommand;
 import com.example.schedule_jpa.dto.CommentRequestDto;
 import com.example.schedule_jpa.dto.CommentResponseDto;
 import com.example.schedule_jpa.service.CommentService;
@@ -23,7 +25,8 @@ public class CommentController {
     public ResponseEntity<CommentResponseDto> createComment(HttpServletRequest request, @RequestBody CommentRequestDto commentRequestDto){
         HttpSession session = request.getSession();
         Long memberId = (Long) session.getAttribute("token");
-        CommentResponseDto commentResponseDto = commentService.save(commentRequestDto.getContent(), memberId, commentRequestDto.getTodoId());
+        CreateCommentCommand commentCommand = new CreateCommentCommand(memberId, commentRequestDto.getContent(), commentRequestDto.getTodoId());
+        CommentResponseDto commentResponseDto = commentService.save(commentCommand);
         return new ResponseEntity<>(commentResponseDto, HttpStatus.CREATED);
     }
 
@@ -43,7 +46,8 @@ public class CommentController {
     public ResponseEntity<Void> updateComment(@PathVariable Long id, HttpServletRequest request, @RequestBody CommentRequestDto commentRequestDto){
         HttpSession session = request.getSession();
         Long memberId = (Long) session.getAttribute("token");
-        commentService.updateComment(id, commentRequestDto.getContent(), memberId);
+        UpdateCommentCommand commentCommand = new UpdateCommentCommand(id, commentRequestDto.getContent(), memberId);
+        commentService.updateComment(commentCommand);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

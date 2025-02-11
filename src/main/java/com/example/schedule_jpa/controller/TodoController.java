@@ -1,5 +1,7 @@
 package com.example.schedule_jpa.controller;
 
+import com.example.schedule_jpa.command.CreateTodoCommand;
+import com.example.schedule_jpa.command.UpdateTodoCommand;
 import com.example.schedule_jpa.dto.TodoRequestDto;
 import com.example.schedule_jpa.dto.TodoResponseDto;
 import com.example.schedule_jpa.service.TodoService;
@@ -25,9 +27,9 @@ public class TodoController {
     public ResponseEntity<TodoResponseDto> save(HttpServletRequest request, @Valid  @RequestBody TodoRequestDto requestDto){
         HttpSession session = request.getSession();
         Long memberId = (Long) session.getAttribute("token");
-
+        CreateTodoCommand todoCommand = new CreateTodoCommand(memberId, requestDto.getTitle() , requestDto.getContent());
         TodoResponseDto responseDto
-                = todoService.save(memberId, requestDto.getTitle(), requestDto.getContent());
+                = todoService.save(todoCommand);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
@@ -47,8 +49,8 @@ public class TodoController {
     public ResponseEntity<Void> updateTodo(HttpServletRequest request, @PathVariable Long id, @RequestBody TodoRequestDto requestDto){
         HttpSession session = request.getSession();
         Long memberId = (Long) session.getAttribute("token");
-
-        todoService.updateTodo(memberId, id, requestDto.getTitle(), requestDto.getContent());
+        UpdateTodoCommand todoCommand = new UpdateTodoCommand(id, memberId, requestDto.getTitle() , requestDto.getContent());
+        todoService.updateTodo(todoCommand);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
