@@ -13,17 +13,20 @@ public class ExceptionController {
 
     @ExceptionHandler(TodoException.class)
     public ResponseEntity<?> handleTodoException(final TodoException e){
-        return ResponseEntity.badRequest().body(new TodoException.ExceptionResponse(e.getErrorCode(), e.getMessage()));
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(new TodoException.ExceptionResponse(e.getErrorCode(), e.getMessage()));
     }
 
     @ExceptionHandler(MemberException.class)
     public ResponseEntity<MemberException.ExceptionResponse> handleTodoException(final MemberException e){
-        return ResponseEntity.badRequest().body(new MemberException.ExceptionResponse(e.getErrorCode(), e.getMessage()));
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(new MemberException.ExceptionResponse(e.getErrorCode(), e.getMessage()));
     }
 
     @ExceptionHandler(CommentException.class)
     public ResponseEntity<CommentException.ExceptionResponse> handleTodoException(final CommentException e){
-        return ResponseEntity.badRequest().body(new CommentException.ExceptionResponse(e.getErrorCode(), e.getMessage()));
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
+                .body(new CommentException.ExceptionResponse(e.getErrorCode(), e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -36,7 +39,4 @@ public class ExceptionController {
 
         return ResponseEntity.badRequest().body(errors);
     }
-
-
-
 }
