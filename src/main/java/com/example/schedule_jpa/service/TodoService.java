@@ -23,19 +23,15 @@ import java.util.List;
 public class TodoService {
 
     private final TodoRepository todoRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     public TodoResponseDto save(CreateTodoCommand command){
 
-        if(!memberRepository.existsById(command.getMemberId())){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 회원을 찾을 수 없습니다.");
-        }
-
-        Member findMember = memberRepository.getReferenceById(command.getMemberId());
+        Member findMember = memberService.findById(command.getMemberId());
         Todo todo = new Todo(command.getTitle(), command.getContent(), findMember);
 
         todoRepository.save(todo);
-        return new TodoResponseDto(todo.getId(),   todo.getTitle(), todo.getContent() , todo.getMember().getId(), todo.getMember().getUsername());
+        return new TodoResponseDto(todo.getId(), todo.getTitle(), todo.getContent() , todo.getMember().getId(), todo.getMember().getUsername());
     }
 
     public Page<TodoResponseDto> findAll(Pageable pageable) {
@@ -45,16 +41,16 @@ public class TodoService {
 
     public Todo findById(Long id) {
         return todoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "조회된 정보가 없습니다."));
+                .orElseThrow(() -> new TodoException(TodoErrorCode.NOT_FOUND_TODO));
     }
 
     @Transactional
     public void updateTodo(UpdateTodoCommand command) {
         Todo todo = todoRepository.findById(command.getId())
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "수정할 수 있는 데이터가 없습니다."));
+                        .orElseThrow(() -> new TodoException(TodoErrorCode.NO_EDITABLE_TODO));
 
         if(!command.getMemberId().equals(todo.getMember().getId())){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "일정은 작성자만 수정이 가능합니다.");
+            throw new TodoException(TodoErrorCode.TODO_EDITABLE_NOT_ALLOWED);
         }
 
         todo.updateTodo(command.getTitle(), command.getContent());
@@ -63,10 +59,10 @@ public class TodoService {
     public void deleteTodo(Long memberId ,Long id) {
 
         Todo todo = todoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "삭제할 수 있는 데이터가 없습니다."));
+                .orElseThrow(() -> new TodoException(TodoErrorCode.NO_DELETED_TODO));
 
         if(!memberId.equals(todo.getMember().getId())){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "일정은 작성자만 삭제가 가능합니다.");
+            throw new TodoException(TodoErrorCode.TODO_DELETED_NOT_ALLOWED);
         }
 
         todoRepository.deleteById(id);

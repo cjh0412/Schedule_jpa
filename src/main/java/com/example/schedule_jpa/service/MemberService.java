@@ -6,6 +6,8 @@ import com.example.schedule_jpa.config.PasswordEncoder;
 import com.example.schedule_jpa.dto.MemberRequestDto;
 import com.example.schedule_jpa.dto.MemberResponseDto;
 import com.example.schedule_jpa.entity.Member;
+import com.example.schedule_jpa.exception.MemberException;
+import com.example.schedule_jpa.exception.errorcode.MemberErrorCode;
 import com.example.schedule_jpa.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,7 +26,7 @@ public class MemberService {
 
     public MemberResponseDto save(CreateMemberCommand command) {
         if(memberRepository.findByEmail(command.getEmail()).isPresent()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 회원가입된 이메일입니다.");
+            throw new MemberException(MemberErrorCode.ALREADY_REGISTER_MEMBER);
         }
 
         Member member = new Member(command.getUsername(), command.getEmail(), encoder.encode(command.getPassword()));
@@ -37,18 +39,18 @@ public class MemberService {
                 .map(MemberResponseDto::toDto);
     }
 
-    // 재사용 가능성 높으므로 member로 반환
+    // 재사용 가능성 높으므로 Member 반환
     public Member findById(Long id) {
         return memberRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "조회된 정보가 없습니다."));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND_MEMBER_ID));
     }
 
     public MemberResponseDto memberLogin(String email, String password) {
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "존재하지 않는 이메일 정보입니다."));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND_MEMBER));
 
         if(!encoder.matches(password, member.getPassword())){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+            throw new MemberException(MemberErrorCode.NOT_MATCHES_PASSWORD);
         };
 
         return new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail());
@@ -57,10 +59,10 @@ public class MemberService {
     @Transactional
     public void updateMember(UpdateMemberCommand command) {
         Member member = memberRepository.findById(command.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "수정할 수 있는 데이터가 없습니다."));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.NO_EDITABLE_MEMBER));
 
         if(!encoder.matches(command.getPassword(), member.getPassword())){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+            throw new MemberException(MemberErrorCode.NOT_MATCHES_PASSWORD);
         };
 
         member.updateMember(command.getUsername(), command.getEmail());
@@ -68,14 +70,12 @@ public class MemberService {
 
     public void deleteMember(Long id, String password) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "삭제할 수 있는 데이터가 없습니다."));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.NO_DELETED_MEMBER));
 
         if(!encoder.matches(password, member.getPassword())){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+            throw new MemberException(MemberErrorCode.NOT_MATCHES_PASSWORD);
         };
 
         memberRepository.deleteById(member.getId());
     }
-
-
 }
