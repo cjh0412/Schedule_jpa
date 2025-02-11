@@ -43,7 +43,7 @@ public class CommentController {
     public ResponseEntity<Void> updateComment(@PathVariable Long id, HttpServletRequest request, @RequestBody CommentRequestDto commentRequestDto){
         HttpSession session = request.getSession();
         Long memberId = (Long) session.getAttribute("token");
-        commentService.updateComment(id, commentRequestDto.getContent(), commentRequestDto.getTodoId());
+        commentService.updateComment(id, commentRequestDto.getContent(), memberId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
