@@ -2,21 +2,17 @@ package com.example.schedule_jpa.service;
 
 import com.example.schedule_jpa.command.CreateTodoCommand;
 import com.example.schedule_jpa.command.UpdateTodoCommand;
-import com.example.schedule_jpa.dto.TodoRequestDto;
 import com.example.schedule_jpa.dto.TodoResponseDto;
 import com.example.schedule_jpa.entity.Member;
 import com.example.schedule_jpa.entity.Todo;
 import com.example.schedule_jpa.exception.TodoException;
 import com.example.schedule_jpa.exception.errorcode.TodoErrorCode;
-import com.example.schedule_jpa.repository.MemberRepository;
 import com.example.schedule_jpa.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -33,7 +29,7 @@ public class TodoService {
         Todo todo = new Todo(command.getTitle(), command.getContent(), findMember);
 
         todoRepository.save(todo);
-        return new TodoResponseDto(todo.getId(), todo.getTitle(), todo.getContent() , todo.getMember().getId(), todo.getMember().getUsername());
+        return TodoResponseDto.toDto(todo);
     }
 
     public Page<TodoResponseDto> findAll(Pageable pageable) {

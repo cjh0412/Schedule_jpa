@@ -28,7 +28,8 @@ public class TodoController {
     public ResponseEntity<TodoResponseDto> save(HttpServletRequest request, @Valid  @RequestBody TodoRequestDto requestDto){
         HttpSession session = request.getSession();
         Long memberId = (Long) session.getAttribute("token");
-        CreateTodoCommand todoCommand = new CreateTodoCommand(memberId, requestDto.getTitle() , requestDto.getContent());
+        CreateTodoCommand todoCommand
+                = new CreateTodoCommand(memberId, requestDto.getTitle() , requestDto.getContent());
         TodoResponseDto responseDto
                 = todoService.save(todoCommand);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
@@ -43,15 +44,16 @@ public class TodoController {
     @GetMapping("/{id}")
     public ResponseEntity<TodoResponseDto> findById(@PathVariable Long id){
         Todo todo = todoService.findById(id);
-        TodoResponseDto responseDto = new TodoResponseDto(todo.getId(), todo.getTitle(), todo.getContent(), todo.getMember().getId(), todo.getMember().getUsername());
-        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        return new ResponseEntity<>(TodoResponseDto.toDto(todo), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateTodo(HttpServletRequest request, @PathVariable Long id, @RequestBody TodoRequestDto requestDto){
         HttpSession session = request.getSession();
         Long memberId = (Long) session.getAttribute("token");
-        UpdateTodoCommand todoCommand = new UpdateTodoCommand(id, memberId, requestDto.getTitle() , requestDto.getContent());
+
+        UpdateTodoCommand todoCommand =
+                new UpdateTodoCommand(id, memberId, requestDto.getTitle() , requestDto.getContent());
         todoService.updateTodo(todoCommand);
         return new ResponseEntity<>(HttpStatus.OK);
     }

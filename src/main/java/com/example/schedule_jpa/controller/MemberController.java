@@ -51,7 +51,7 @@ public class MemberController {
     @GetMapping("/{id}")
     public ResponseEntity<MemberResponseDto> findById(@PathVariable Long id){
         Member member = memberService.findById(id);
-        return new ResponseEntity<>(new MemberResponseDto(member.getId(), member.getUsername(), member.getEmail()), HttpStatus.OK);
+        return new ResponseEntity<>(MemberResponseDto.toDto(member), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")

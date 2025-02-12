@@ -8,7 +8,6 @@ import com.example.schedule_jpa.entity.Comment;
 import com.example.schedule_jpa.service.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,14 +40,7 @@ public class CommentController {
     public ResponseEntity<CommentResponseDto> findById(@PathVariable Long id){
         Comment comment = commentService.findById(id);
 
-        return new ResponseEntity<>(
-                new CommentResponseDto(
-                        comment.getId(),
-                        comment.getTodo().getId(),
-                        comment.getContent(),
-                        comment.getMember().getId(),
-                        comment.getMember().getUsername(),
-                        comment.getCreatedAt()), HttpStatus.OK);
+        return new ResponseEntity<>(CommentResponseDto.toDto(comment), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
