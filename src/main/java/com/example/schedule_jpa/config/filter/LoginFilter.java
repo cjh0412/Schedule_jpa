@@ -1,5 +1,7 @@
 package com.example.schedule_jpa.config.filter;
 
+import com.example.schedule_jpa.exception.MemberException;
+import com.example.schedule_jpa.exception.errorcode.MemberErrorCode;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,20 +16,18 @@ public class LoginFilter implements Filter {
     private static String[] WHITE_LIST = {"/", "/members/signUp", "/members/login"};
     private static final Logger log = LoggerFactory.getLogger(LoginFilter.class);
 
-
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-        String requestURI = request.getRequestURI();
-
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+        String requestURI = request.getRequestURI();
         log.info("로그인 필터 로직 실행");
 
         if(!isWhiteList(requestURI)){
             HttpSession session = request.getSession(false);
 
             if(session == null || session.getAttribute("token") == null){
-                throw new RuntimeException("로그인 후 이용하시기 바랍니다.");
+                throw new MemberException(MemberErrorCode.LOGIN_REQUIRED);
             }
         }
 

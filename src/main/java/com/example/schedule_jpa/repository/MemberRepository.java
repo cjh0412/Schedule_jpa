@@ -1,7 +1,6 @@
 package com.example.schedule_jpa.repository;
 
 import com.example.schedule_jpa.entity.Member;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

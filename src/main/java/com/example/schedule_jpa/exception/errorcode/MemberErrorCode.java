@@ -12,7 +12,8 @@ public enum MemberErrorCode {
     NOT_FOUND_MEMBER(HttpStatus.UNAUTHORIZED, "존재하지 않는 회원입니다."),
     NOT_MATCHES_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
     NO_EDITABLE_MEMBER(HttpStatus.NOT_FOUND, "수정할 수 있는 회원 정보가 존재하지 않습니다."),
-    NO_DELETED_MEMBER(HttpStatus.NOT_FOUND, "삭제할 수 있는 회원 정보가 존재하지 않습니다.")
+    NO_DELETED_MEMBER(HttpStatus.NOT_FOUND, "삭제할 수 있는 회원 정보가 존재하지 않습니다."),
+    LOGIN_REQUIRED(HttpStatus.NOT_FOUND, "로그인이 필요합니다.")
     ;
 
     private final HttpStatus httpStatus;

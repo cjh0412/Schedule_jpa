@@ -16,8 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/todos")
@@ -25,11 +23,9 @@ public class TodoController {
     private final TodoService todoService;
 
     @PostMapping
-    public ResponseEntity<TodoResponseDto> save(HttpServletRequest request, @Valid  @RequestBody TodoRequestDto requestDto){
-        HttpSession session = request.getSession();
-        Long memberId = (Long) session.getAttribute("token");
+    public ResponseEntity<TodoResponseDto> save(@SessionAttribute("token") String memberId, @Valid  @RequestBody TodoRequestDto requestDto){
         CreateTodoCommand todoCommand
-                = new CreateTodoCommand(memberId, requestDto.getTitle() , requestDto.getContent());
+                = new CreateTodoCommand(Long.parseLong(memberId), requestDto.getTitle() , requestDto.getContent());
         TodoResponseDto responseDto
                 = todoService.save(todoCommand);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
@@ -48,22 +44,16 @@ public class TodoController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateTodo(HttpServletRequest request, @PathVariable Long id, @RequestBody TodoRequestDto requestDto){
-        HttpSession session = request.getSession();
-        Long memberId = (Long) session.getAttribute("token");
-
+    public ResponseEntity<Void> updateTodo(@SessionAttribute("token") String memberId, @PathVariable Long id, @RequestBody TodoRequestDto requestDto){
         UpdateTodoCommand todoCommand =
-                new UpdateTodoCommand(id, memberId, requestDto.getTitle() , requestDto.getContent());
+                new UpdateTodoCommand(id, Long.parseLong(memberId), requestDto.getTitle() , requestDto.getContent());
         todoService.updateTodo(todoCommand);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTodo(HttpServletRequest request, @PathVariable Long id){
-        HttpSession session = request.getSession();
-        Long memberId = (Long) session.getAttribute("token");
-
-        todoService.deleteTodo(memberId, id);
+    public ResponseEntity<Void> deleteTodo(@SessionAttribute("token") String memberId, @PathVariable Long id){
+        todoService.deleteTodo(Long.parseLong(memberId), id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

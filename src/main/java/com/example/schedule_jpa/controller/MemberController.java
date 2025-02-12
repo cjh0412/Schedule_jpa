@@ -18,8 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/members")
@@ -56,7 +54,7 @@ public class MemberController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateMember(@PathVariable Long id, @RequestBody MemberRequestDto requestDto){
-        UpdateMemberCommand memberCommand = new UpdateMemberCommand(id, requestDto.getUsername(), requestDto.getEmail(), requestDto.getPassword());
+        UpdateMemberCommand memberCommand = new UpdateMemberCommand(id, requestDto.getUsername(), requestDto.getPassword(), requestDto.getEmail());
         memberService.updateMember(memberCommand);
         return new ResponseEntity<>(HttpStatus.OK);
     }

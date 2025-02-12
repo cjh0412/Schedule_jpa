@@ -22,10 +22,8 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping
-    public ResponseEntity<CommentResponseDto> createComment(HttpServletRequest request, @RequestBody CommentRequestDto commentRequestDto){
-        HttpSession session = request.getSession();
-        Long memberId = (Long) session.getAttribute("token");
-        CreateCommentCommand commentCommand = new CreateCommentCommand(memberId, commentRequestDto.getContent(), commentRequestDto.getTodoId());
+    public ResponseEntity<CommentResponseDto> createComment(@SessionAttribute("token") String memberId, @RequestBody CommentRequestDto commentRequestDto){
+        CreateCommentCommand commentCommand = new CreateCommentCommand(commentRequestDto.getTodoId(), commentRequestDto.getContent(), Long.parseLong(memberId));
         CommentResponseDto commentResponseDto = commentService.save(commentCommand);
         return new ResponseEntity<>(commentResponseDto, HttpStatus.CREATED);
     }
