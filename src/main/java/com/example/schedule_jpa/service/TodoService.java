@@ -22,7 +22,6 @@ public class TodoService {
     private final MemberService memberService;
 
     public TodoResponseDto save(CreateTodoCommand command){
-
         Member findMember = memberService.findById(command.getMemberId());
         Todo todo = new Todo(command.getTitle(), command.getContent(), findMember);
 
