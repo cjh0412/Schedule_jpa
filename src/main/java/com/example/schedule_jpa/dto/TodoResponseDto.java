@@ -21,6 +21,12 @@ public class TodoResponseDto {
 
 
     public static TodoResponseDto toDto(Todo todo){
-        return new TodoResponseDto(todo.getId(), todo.getTitle(), todo.getContent(), todo.getMember().getId(), todo.getMember().getUsername());
+        return new TodoResponseDto(
+                todo.getId(),
+                todo.getTitle(),
+                todo.getContent(),
+                todo.getMember().getId(),
+                todo.getMember().getUsername()
+        );
     }
 }

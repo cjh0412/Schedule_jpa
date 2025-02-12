@@ -2,7 +2,6 @@ package com.example.schedule_jpa.service;
 
 import com.example.schedule_jpa.command.CreateCommentCommand;
 import com.example.schedule_jpa.command.UpdateCommentCommand;
-import com.example.schedule_jpa.dto.CommentRequestDto;
 import com.example.schedule_jpa.dto.CommentResponseDto;
 import com.example.schedule_jpa.entity.Comment;
 import com.example.schedule_jpa.entity.Member;
@@ -10,12 +9,8 @@ import com.example.schedule_jpa.entity.Todo;
 import com.example.schedule_jpa.exception.CommentException;
 import com.example.schedule_jpa.exception.errorcode.CommentErrorCode;
 import com.example.schedule_jpa.repository.CommentRepository;
-import com.example.schedule_jpa.repository.MemberRepository;
-import com.example.schedule_jpa.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -33,12 +28,7 @@ public class CommentService {
         Comment comment = new Comment(commentCommand.getContent(), findMember, todo);
         commentRepository.save(comment);
 
-        return new CommentResponseDto(comment.getId(),
-                comment.getTodo().getId(),
-                comment.getContent(),
-                comment.getMember().getId(),
-                comment.getMember().getUsername(),
-                comment.getCreatedAt());
+        return CommentResponseDto.toDto(comment);
     }
 
     public List<CommentResponseDto> findAll(){
