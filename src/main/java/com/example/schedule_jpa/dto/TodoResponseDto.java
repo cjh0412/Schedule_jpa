@@ -19,7 +19,6 @@ public class TodoResponseDto {
         this.username = username;
     }
 
-
     public static TodoResponseDto toDto(Todo todo){
         return new TodoResponseDto(
                 todo.getId(),
